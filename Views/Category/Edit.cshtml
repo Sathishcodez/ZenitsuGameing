@@ -1,0 +1,29 @@
+﻿@model Category
+
+<h2>Edit Category</h2>
+
+<form method="post">
+
+    <input type="hidden" asp-for="CategoryId" />
+    
+    <div class="mb-3">
+    <label class="form-label" asp-for="Name"></label>
+    <input class="form-control" asp-for="Name" />
+    <span class="text-danger" asp-validation-for="Name"></span>
+    </div>
+
+    <div class="mb-3">
+        
+        <label class="form-label" asp-for="DisplayOrder"></label>
+        <input class="form-control" asp-for="DisplayOrder" />
+        <span class="text-danger" asp-validation-for="DisplayOrder"></span>
+    
+    </div>
+
+    <button type="submit" class="btn btn-success btn-primary ms-2">
+        Update <i class="bi bi-check-circle"></i>
+    </button>
+
+    <a class="btn btn-secondary" asp-controller="Category" asp-action="index">Cancel</a>
+
+</form>
