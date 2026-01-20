@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ZenitsuGameing.Models;
 
-namespace ZenitsuGameing.Controllers
+namespace ZenitsuGameing.Areas.Customer.Controllers
 {
     public class HomeController : Controller
     {

@@ -1,0 +1,35 @@
+﻿@model Category
+
+<h2>Create Category</h2>
+
+<div class="card shadow border-0 mt-5">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-3">Create Categoty</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" class="row">
+
+            <div class="mb-3">
+
+                <label class="form-label">Category Name</label>
+                <input asp-for="Name" class="form-control" />
+
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Display Order</label>
+                <input asp-for="DisplayOrder" class="form-control" />
+            </div>>
+
+            <button type="submit" class="btn btn-success">Save</button>
+            <a asp-action="index" class="btn btn-secondary">Back</a>
+
+        </form>
+    </div>
+</div>
+
+

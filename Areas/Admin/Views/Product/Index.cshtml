@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Product>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Game List</h2>
+    <a class="btn btn-primary" asp-controller="Product" asp-action="Upsert"> <i class="bi bi-plus-circle me-1"></i>Add Product</a>
+</div>
+
+
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Creator</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Price50</th>
+            <th>Price100</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var data in Model)
+        {
+            <tr>
+                <td>@data.Title</td>
+                <td>@data.Description</td>
+                <td>@data.Creator</td>
+                <td>@data.Category</td>
+                <td>@data.Price</td>
+                <td>@data.Price50</td>
+                <td>@data.Price100</td>
+                <td class="text-center">
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="Product" asp-action="Upsert" asp-route-id="@data.Id">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <a class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-itemid="@data.Id"><i class="bi bi-trash-fill"></i>Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Conformation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-black">
+                Are you sure wanna delete this Category?
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Product" asp-action="Delete" method="post">
+                    <input type="hidden" id="deleteId" name="id" />
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancle</button>
+                    <button type="submit" class="btn btn-outline-primary btn-outline-danger">Yes,delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var deletemodal = document.getElementById('deleteModal');
+        deletemodal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var categoryId = button.getAttribute('data-itemid');
+            document.getElementById('deleteId').value = categoryId;
+        });
+    </script>
+}
+
+
+

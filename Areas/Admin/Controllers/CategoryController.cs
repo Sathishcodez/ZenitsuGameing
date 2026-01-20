@@ -1,23 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
-using ZenitsuGameing.Data;
+using ZenitsuGameing.DataAccess.Repositories;
+using ZenitsuGameing.DataAccess.Repositories.IRepository;
+using ZenitsuGameing.DataAcess.Data;
 using ZenitsuGameing.Models;
 
-namespace ZenitsuGameing.Controllers
+namespace ZenitsuGameing.Areas.Admin.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryController(ApplicationDbContext context)
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-                _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            object categories = _context.Categories.ToList();
+            object categories = _unitOfWork.Category.GetAll().ToList();
             return View(categories);
         }
 
@@ -31,8 +33,8 @@ namespace ZenitsuGameing.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Categories.Add(obj);
-                _context.SaveChanges();
+                _unitOfWork.Category.Add(obj);
+                _unitOfWork.Save();
                 TempData["success"] = "Category Created Successfull";
                 return RedirectToAction("index");
             }
@@ -41,7 +43,7 @@ namespace ZenitsuGameing.Controllers
 
         public IActionResult Edit(int Id)
         {
-            var category = _context.Categories.FirstOrDefault(d => d.CategoryId == Id);
+            var category = _unitOfWork.Category.GetFirstOrDefault(d => d.CategoryId == Id);
             if (category == null)
             {
                 return NotFound();
@@ -52,12 +54,12 @@ namespace ZenitsuGameing.Controllers
         [HttpPost]
         public IActionResult Edit(Category obj)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 return View(obj);
             }
 
-            var categorytoupdate = _context.Categories.FirstOrDefault(d => d.CategoryId == obj.CategoryId);
+            var categorytoupdate = _unitOfWork.Category.GetFirstOrDefault(d => d.CategoryId == obj.CategoryId);
             if (categorytoupdate == null)
             {
                 return NotFound();
@@ -65,7 +67,7 @@ namespace ZenitsuGameing.Controllers
             categorytoupdate.Name = obj.Name;
             categorytoupdate.DisplayOrder = obj.DisplayOrder;
 
-            _context.SaveChanges();
+            _unitOfWork.Save();
             return RedirectToAction("index");
         }
 
@@ -82,15 +84,15 @@ namespace ZenitsuGameing.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            var category = _context.Categories.Find(id);
+            var category = _unitOfWork.Category.GetFirstOrDefault(d => d.CategoryId == id);
 
             if (category == null)
                 return NotFound();
 
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
+            _unitOfWork.Category.Remove(category);
+            _unitOfWork.Save();
 
-            TempData["success"]="Category deleted Successfully";
+            TempData["success"] = "Category deleted Successfully";
 
             return RedirectToAction(nameof(Index));
         }
