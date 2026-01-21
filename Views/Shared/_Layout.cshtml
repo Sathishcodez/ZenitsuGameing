@@ -21,6 +21,7 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="//cdn.datatables.net/2.3.6/css/dataTables.dataTables.min.css" />
 </head>
 
 
@@ -61,14 +62,14 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container" mb-3 pb-3" style="min-height:100vh>
         <main role="main" class="pb-3">
             @RenderBody()
             <partial name="_Notifications" />
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer bg-primary text-muted ">
         <div class="container text-center text-black">
             &copy; 2025 - ZenitsuGaming -
             <i class="bi bi-controller me-1"></i> Get Beyond Games
@@ -79,6 +80,9 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="//cdn.datatables.net/2.3.6/js/dataTables.min.js" asp-append-version="true"></script>
+    <script src="//cdn.datatables.net/2.3.6/js/dataTables.min.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

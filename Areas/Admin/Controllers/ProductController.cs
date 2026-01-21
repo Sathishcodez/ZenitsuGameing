@@ -18,7 +18,7 @@ namespace ZenitsuGameing.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            IEnumerable<Product> products  = _unitOfWork.Product.GetAll();
+            IEnumerable<Product> products  = _unitOfWork.Product.GetAll(includeprop:"Category");
 
             return View(products);
         }
@@ -43,7 +43,7 @@ namespace ZenitsuGameing.Areas.Admin.Controllers
             else
             {
                 //update
-                productVM.Product = _unitOfWork.Product.GetFirstOrDefault(d => d.Id == id);
+                productVM.Product = _unitOfWork.Product.GetFirstOrDefault(d => d.Id == id, includeprop: "Category");
                 return View(productVM);
             }
         }
@@ -59,6 +59,16 @@ namespace ZenitsuGameing.Areas.Admin.Controllers
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                     string productpath =Path.Combine(wwwRootPath, @"images\products");
 
+                    if (obj.Product.ImageUrl != null)
+                    {
+                        var oldImg = Path.Combine(wwwRootPath, obj.Product.ImageUrl.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(oldImg))
+                        {
+                            System.IO.File.Delete(oldImg);
+                        }
+                    }
+
                     using (var fileStream = new FileStream(Path.Combine(productpath, fileName), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
@@ -67,8 +77,15 @@ namespace ZenitsuGameing.Areas.Admin.Controllers
                     obj.Product.ImageUrl = @"\images\products\" + fileName;
                 }
 
-
-                _unitOfWork.Product.Add(obj.Product);
+                if (obj.Product.Id == 0)
+                {
+                    _unitOfWork.Product.Add(obj.Product);
+                }
+                else
+                {
+                    _unitOfWork.Product.update(obj.Product);
+                }
+                    
                 _unitOfWork.Save();
                 TempData["success"] = "Product Created Successfull";
                 return RedirectToAction("index");
@@ -76,20 +93,37 @@ namespace ZenitsuGameing.Areas.Admin.Controllers
             return View(obj);
         }
 
-        [HttpPost]
-        public IActionResult Delete(int id)
+        #region API Calls
+
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            var product = _unitOfWork.Product.GetFirstOrDefault(d => d.Id == id);
+            List<Product> productList = _unitOfWork.Product.GetAll(includeprop: "Category").ToList();
+            return Json(new { data = productList });
+        }
 
-            if (product == null)
-                return NotFound();
+        public IActionResult Delete(int? id)
+        {
+            var productToBeDeleted = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+            if (productToBeDeleted == null)
+            {
+                return Json(new { success = false, Message = "Error while deleting" });
+            }
+            var oldImg = Path.Combine(_hostEnvironment.WebRootPath, productToBeDeleted.ImageUrl.TrimStart('\\'));
 
-            _unitOfWork.Product.Remove(product);
+            if (System.IO.File.Exists(oldImg))
+            {
+                System.IO.File.Delete(oldImg);
+            }
+
+            _unitOfWork.Product.Remove(productToBeDeleted);
             _unitOfWork.Save();
 
-            TempData["success"] = "Category deleted Successfully";
 
-            return RedirectToAction(nameof(Index));
+            List<Product> productList = _unitOfWork.Product.GetAll(includeprop: "Category").ToList();
+            return Json(new { success = true, Message = "Deleted Successfully" });
         }
+
+            #endregion
     }
 }

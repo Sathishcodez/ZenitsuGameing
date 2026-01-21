@@ -1,0 +1,128 @@
+﻿@model Product
+
+<form method="post">
+    <div class="card shadow border-0 mt-4 mb-4">
+        <div class="card-header bg-secondary bg-gradient text-light py-4">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h3 class="text-white text-uppercase">@Model.Title</h3>
+                    <p class="text-white-50 fw-semibold mb-0">
+                        by @Model.Creator
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="py-3">
+
+                <!-- Back Button -->
+                <div class="row mb-3">
+                    <div class="col-6 col-md-2">
+                        <a asp-action="Index"
+                           class="btn btn-outline-primary bg-gradient fw-semibold btn-sm text-uppercase">
+                            <small>Back to home</small>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="row align-items-start">
+
+                    <!-- Product Image -->
+                    <div class="col-12 col-lg-4 text-center mb-4 mb-lg-0">
+                        <div class="product-image-wrapper">
+                            <img src="@Model.ImageUrl"
+                                 alt="@Model.Title"
+                                 class="product-image" />
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-12 col-lg-8">
+
+                        <!-- Category -->
+                        <div class="mb-3">
+                            <span class="badge bg-info text-dark">
+                                @Model.Category.Name
+                            </span>
+                        </div>
+
+                        <!-- List Price -->
+                        <h6 class="text-dark text-opacity-50 mb-3">
+                            List Price:
+                            <span class="text-decoration-line-through">
+                                @Model.Price.ToString("c")
+                            </span>
+                        </h6>
+
+                        <!-- Price Table Header -->
+                        <div class="row text-center mb-1">
+                            <div class="col-3 col-md-2 fw-semibold text-secondary">
+                                Quantity
+                            </div>
+                            <div class="col-3 col-md-2 fw-semibold text-secondary">
+                                1–50
+                            </div>
+                            <div class="col-3 col-md-2 fw-semibold text-secondary">
+                                51–100
+                            </div>
+                            <div class="col-3 col-md-2 fw-semibold text-secondary">
+                                100+
+                            </div>
+                        </div>
+
+                        <!-- Price Table Values -->
+                        <div class="row text-center mb-4">
+                            <div class="col-3 col-md-2 fw-bold text-warning">
+                                Price
+                            </div>
+                            <div class="col-3 col-md-2 fw-bold text-warning">
+                                @Model.Price.ToString("c")
+                            </div>
+                            <div class="col-3 col-md-2 fw-bold text-warning">
+                                @Model.Price50.ToString("c")
+                            </div>
+                            <div class="col-3 col-md-2 fw-bold text-warning">
+                                @Model.Price100.ToString("c")
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="text-secondary mb-4">
+                            @Html.Raw(Model.Description)
+                        </p>
+
+                        <!-- Quantity -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white fw-semibold">
+                                        Count
+                                    </span>
+                                    <input type="number"
+                                           value="1"
+                                           min="1"
+                                           class="form-control text-end" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add to Cart -->
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <button type="submit"
+                                        disabled
+                                        class="btn btn-primary bg-gradient w-100 py-2 text-uppercase fw-semibold">
+                                    Add to Cart (Coming Soon...)
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
