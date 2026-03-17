@@ -2,6 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,14 +19,10 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
+using ZenitsuGameing.DataAccess.Repositories;
+using ZenitsuGameing.DataAccess.Repositories.IRepository;
+using ZenitsuGameing.Models;
+using ZenitsuGameing.Utility;
 
 namespace ZenitsuGameing.Areas.Identity.Pages.Account
 {
@@ -29,13 +34,17 @@ namespace ZenitsuGameing.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUnitOfWork _unitOfWork;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+             RoleManager<IdentityRole> roleManager,
+             IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -43,6 +52,8 @@ namespace ZenitsuGameing.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -97,11 +108,47 @@ namespace ZenitsuGameing.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            public string Name { get; set; }
+            public string? City { get; set; }
+            public string? Country { get; set; }
+            public string? State { get; set; }
+            public string? PhoneNumber { get; set; }
+            public string? Role {  get; set; }
+            public int? CompanyId {  get; set; }
+
+            public IEnumerable<SelectListItem> RoleList {  get; set; }
+
+            public IEnumerable<SelectListItem> CompanyList { get; set; }
         }
 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            if (!_roleManager.RoleExistsAsync(UserRole.CustomerRole).GetAwaiter().GetResult())
+            {
+                _roleManager.CreateAsync(new IdentityRole(UserRole.CustomerRole)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(UserRole.AdminRole)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(UserRole.CompanyRole)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(UserRole.EmployeeRole)).GetAwaiter().GetResult();
+
+            }
+
+            Input = new()
+            {
+                RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
+                {
+                    Text = i,
+                    Value = i
+                }),
+                CompanyList = _unitOfWork.Company.GetAll().Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.CompanyId.ToString()
+                })
+            };
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -113,14 +160,34 @@ namespace ZenitsuGameing.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.Name = Input.Name;
+                user.City = Input.City;
+                user.Country = Input.Country;
+                user.State = Input.State;
+                user.PhoneNumber = Input.PhoneNumber;
+
+                if(Input.Role == UserRole.CustomerRole)
+                {
+                    user.CompanyId = Input.CompanyId;
+                }
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    if (!string.IsNullOrEmpty(Input.Role))
+                    {
+                        await _userManager.AddToRoleAsync(user, Input.Role);
+
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, UserRole.CustomerRole);
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -154,11 +221,11 @@ namespace ZenitsuGameing.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private Applicationusers CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<Applicationusers>();
             }
             catch
             {

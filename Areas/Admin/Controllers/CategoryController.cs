@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 using ZenitsuGameing.DataAccess.Repositories;
 using ZenitsuGameing.DataAccess.Repositories.IRepository;
 using ZenitsuGameing.DataAcess.Data;
 using ZenitsuGameing.Models;
+using ZenitsuGameing.Utility;
 
 namespace ZenitsuGameing.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    //[Authorize(Roles = UserRole.AdminRole)]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

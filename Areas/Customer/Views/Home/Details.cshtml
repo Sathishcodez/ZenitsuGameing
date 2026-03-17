@@ -1,13 +1,13 @@
-﻿@model Product
+﻿@model ShoppingCart
 
 <form method="post">
     <div class="card shadow border-0 mt-4 mb-4">
         <div class="card-header bg-secondary bg-gradient text-light py-4">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h3 class="text-white text-uppercase">@Model.Title</h3>
+                    <h3 class="text-white text-uppercase">@Model.Product.Title</h3>
                     <p class="text-white-50 fw-semibold mb-0">
-                        by @Model.Creator
+                        by @Model.Product.Creator
                     </p>
                 </div>
             </div>
@@ -32,8 +32,8 @@
                     <!-- Product Image -->
                     <div class="col-12 col-lg-4 text-center mb-4 mb-lg-0">
                         <div class="product-image-wrapper">
-                            <img src="@Model.ImageUrl"
-                                 alt="@Model.Title"
+                            <img src="@Model.Product.ImageUrl"
+                                 alt="@Model.Product.Title"
                                  class="product-image" />
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                         <!-- Category -->
                         <div class="mb-3">
                             <span class="badge bg-info text-dark">
-                                @Model.Category.Name
+                                @Model.Product.Category.Name
                             </span>
                         </div>
 
@@ -52,7 +52,7 @@
                         <h6 class="text-dark text-opacity-50 mb-3">
                             List Price:
                             <span class="text-decoration-line-through">
-                                @Model.Price.ToString("c")
+                                @Model.Product.Price.ToString("c")
                             </span>
                         </h6>
 
@@ -78,19 +78,19 @@
                                 Price
                             </div>
                             <div class="col-3 col-md-2 fw-bold text-warning">
-                                @Model.Price.ToString("c")
+                                @Model.Product.Price.ToString("c")
                             </div>
                             <div class="col-3 col-md-2 fw-bold text-warning">
-                                @Model.Price50.ToString("c")
+                                @Model.Product.Price50.ToString("c")
                             </div>
                             <div class="col-3 col-md-2 fw-bold text-warning">
-                                @Model.Price100.ToString("c")
+                                @Model.Product.Price100.ToString("c")
                             </div>
                         </div>
 
                         <!-- Description -->
                         <p class="text-secondary mb-4">
-                            @Html.Raw(Model.Description)
+                            @Html.Raw(Model.Product.Description)
                         </p>
 
                         <!-- Quantity -->
@@ -100,7 +100,7 @@
                                     <span class="input-group-text bg-primary text-white fw-semibold">
                                         Count
                                     </span>
-                                    <input type="number"
+                                    <input asp-for="Count" type="number"
                                            value="1"
                                            min="1"
                                            class="form-control text-end" />
@@ -114,7 +114,7 @@
                                 <button type="submit"
                                         disabled
                                         class="btn btn-primary bg-gradient w-100 py-2 text-uppercase fw-semibold">
-                                    Add to Cart (Coming Soon...)
+                                    Add to Cart
                                 </button>
                             </div>
                         </div>

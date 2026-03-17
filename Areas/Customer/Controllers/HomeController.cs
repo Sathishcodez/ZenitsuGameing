@@ -6,6 +6,7 @@ using ZenitsuGameing.Models;
 
 namespace ZenitsuGameing.Areas.Customer.Controllers
 {
+    [Area("Customer")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -24,8 +25,16 @@ namespace ZenitsuGameing.Areas.Customer.Controllers
         }
         public IActionResult Details(int id)
         {
-            Product products = _unitOfWork.Product.GetFirstOrDefault(u=>u.Id==id,includeprop: "Category");
-            return View(products);
+            ShoppingCart cart = new()
+            {
+                Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id, includeprop: "Category"),
+                Count = 1,
+                ProductId = id
+
+
+            };
+            
+            return View(cart);
         }
 
         public IActionResult Privacy()

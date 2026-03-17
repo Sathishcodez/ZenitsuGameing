@@ -6,6 +6,7 @@ using ZenitsuGameing.Models.ViewModels;
 
 namespace ZenitsuGameing.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class ProductController : Controller
     {
 
@@ -57,7 +58,7 @@ namespace ZenitsuGameing.Areas.Admin.Controllers
                 if (file != null)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string productpath =Path.Combine(wwwRootPath, @"images\products");
+                    string productpath = Path.Combine(wwwRootPath, @"Images\Products");
 
                     if (obj.Product.ImageUrl != null)
                     {
@@ -74,7 +75,7 @@ namespace ZenitsuGameing.Areas.Admin.Controllers
                         file.CopyTo(fileStream);
                     }
 
-                    obj.Product.ImageUrl = @"\images\products\" + fileName;
+                    obj.Product.ImageUrl = @"/Images/Products/" + fileName;
                 }
 
                 if (obj.Product.Id == 0)
